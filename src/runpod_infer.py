@@ -64,8 +64,9 @@ def predict(job):
         # save image in temp folder
         img_data = get_image(job_input.get(f'{img}_url', None), job_input.get(f'{img}_base64', None))
         img_path = os.path.join(tmp_folder, f'{img}.png')
-        Image.fromarray(img_data).save(img_path)
-        inputs[img] = img_path
+        #Image.fromarray(img_data).save(img_path)
+        #inputs[img] = img_path
+        inputs[img] = img_data
     prompt = job_input.get('prompt', '')
     output_image = any2any_predict(inputs['src'], inputs['ref'], prompt)
     output_image = Image.fromarray(output_image.astype(np.uint8))
