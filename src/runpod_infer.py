@@ -21,7 +21,7 @@ from prediction import any2any_predict
 import tempfile
 
 
-def get_image(image_url, image_base64):
+def get_image(image_url=None, image_base64=None):
     '''
     Get the image from the provided URL or base64 string.
     Returns a PIL image.
@@ -55,18 +55,53 @@ def predict(job):
 
     tmp_folder = tempfile.mkdtemp()
     inputs = {}
-    for img in ['src', 'ref']:
-        if job_input.get(F'{img}_url', None) is None and job_input.get(f'{img}_base64', None) is None:
-            return {'error': f'No {img} image provided. Please provide an {img}_url or {img}_base64.'}
-        elif job_input.get(f'{img}_url', None) is not None and job_input.get(f'{img}_base64', None) is not None:
-            return {'error': f'Both {img}_url and {img}_base64 provided. Please provide only one.'}
-        
-        # save image in temp folder
-        img_data = get_image(job_input.get(f'{img}_url', None), job_input.get(f'{img}_base64', None))
-        img_path = os.path.join(tmp_folder, f'{img}.png')
-        #Image.fromarray(img_data).save(img_path)
-        #inputs[img] = img_path
-        inputs[img] = img_data
+
+    if job_input.get(F'src_url', None) is None and job_input.get(f'src_base64', None) is None:
+        return {'error': f'No src image provided. Please provide an src_url or src_base64.'}
+    elif job_input.get(f'src_url', None) is not None and job_input.get(f'src_base64', None) is not None:
+        return {'error': f'Both src_url and src_base64 provided. Please provide only one.'}
+
+    # save image in temp folder
+    img_data = get_image(job_input.get(f'src_url', None), job_input.get(f'src_base64', None))
+    # img_path = os.path.join(tmp_folder, f'src.png')
+    #Image.fromarray(img_data).save(img_path)
+    #inputs[img] = img_path
+    inputs['src'] = img_data
+
+    
+    if job_input.get(F'ref_url', None) is None and job_input.get(f'ref_base64', None) is None:
+        return {'error': f'No ref image provided. Please provide an ref_url or ref_base64.'}
+    elif job_input.get(f'ref_url', None) is not None and job_input.get(f'ref_base64', None) is not None:
+        return {'error': f'Both ref_url and ref_base64 provided. Please provide only one.'}
+
+    # save image in temp folder
+    if job_input.get('ref_url') is not None:
+        source = 'image_url'
+        ref_data = job_input['ref_url']
+    else:
+        source = 'image_base64'
+        ref_data = job_input['ref_base64']
+
+    if type(ref_data) != list:
+        ref_data = [ref_data]
+
+    ref_images = []
+    height = 0
+    width = 0
+    for ref in enumerate(ref_data):
+        img_data = get_image(**{source: ref})
+        height = max(height, img_data.shape[0])
+        width += img_data.shape[1]
+        ref_images.append(img_data)
+    
+    ref_img_data = 255*np.ones((height, width), dtype=ref_images[0].dtype)
+    w=0
+    for img_data in ref_images:
+        ref_img_data[:img_data.shape[0], w:w+img_data.shape[1]] = img_data
+        w+=img_data.shape[1]
+
+    inputs['ref'] = ref_img_data
+
     prompt = job_input.get('prompt', '')
     output_image = any2any_predict(inputs['src'], inputs['ref'], prompt)
     output_image = Image.fromarray(output_image.astype(np.uint8))
