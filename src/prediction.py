@@ -110,6 +110,9 @@ def load_models(device=device, torch_dtype=torch_dtype,group_offloading=False, b
     pipe.to(device=device)
     return pipe
 
+
+pipe = load_models()
+
 def crop_to_multiple_of_16(img):
     width, height = img.size
     
@@ -174,8 +177,7 @@ def resize_by_height(image, height):
 
 # @spaces.GPU()
 @torch.no_grad
-def any2any_predict(prompt, model_image, garment_image, height=512, width=384, seed=0, guidance_scale=3.5, show_type="follow model image", num_inference_steps=30):
-    pipe = load_models()
+def any2any_predict(model_image, garment_image, prompt, height=512, width=384, seed=0, guidance_scale=3.5, show_type="follow model image", num_inference_steps=30):
     
     height, width = int(height), int(width)
     width = width - (width % 16)  
@@ -236,7 +238,7 @@ def any2any_predict(prompt, model_image, garment_image, height=512, width=384, s
     if show_type=="follow model image" and has_model_image and has_garment_image:
         output = output.crop((lp, tp, output.width-rp, output.height-bp)).resize((input_width, input_height))
     
-    return output
+    return np.array(output)
 
 def update_dimensions(model_image, garment_image, height, width, auto_ar):
     if not auto_ar:

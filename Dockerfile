@@ -47,16 +47,16 @@ RUN python3.10 -m pip install runpod
 RUN git clone https://github.com/logn-2024/Any2anyTryon.git
 WORKDIR Any2anyTryon
 
-RUN python3.10 -m pip install accelerate==1.2.1
-RUN python3.10 -m pip install optimum-quanto==0.2.6
-RUN python3.10 -m pip install peft==0.14.0
-RUN python3.10 -m pip install sentencepiece==0.2.0
-RUN python3.10 -m pip install transformers==4.44.2
-RUN python3.10 -m pip install diffusers @ git+https://github.com/huggingface/diffusers@dc62e6931e3aac1d78375928693186764dcb8492
-RUN python3.10 -m pip install datasets
-RUN python3.10 -m pip install pandas==2.2.3
-RUN python3.10 -m pip install pillow==11.1.0
-RUN python3.10 -m pip install protobuf
+# RUN python3.10 -m pip install accelerate==1.2.1
+# RUN python3.10 -m pip install optimum-quanto==0.2.6
+# RUN python3.10 -m pip install peft==0.14.0
+# RUN python3.10 -m pip install sentencepiece==0.2.0
+# RUN python3.10 -m pip install transformers==4.44.2
+# RUN python3.10 -m pip install diffusers @ git+https://github.com/huggingface/diffusers@dc62e6931e3aac1d78375928693186764dcb8492
+# RUN python3.10 -m pip install datasets
+# RUN python3.10 -m pip install pandas==2.2.3
+# RUN python3.10 -m pip install pillow==11.1.0
+# RUN python3.10 -m pip install protobuf
 # Download weights
 COPY builder/download_weights.py .
 RUN python3.10 -m pip install -r requirements.txt

@@ -5,6 +5,8 @@ from diffusers.hooks import apply_group_offloading
 from transformers import T5EncoderModel, CLIPTextModel
 from src.pipeline_tryon import FluxTryonPipeline
 from optimum.quanto import freeze, qfloat8, quantize
+import os
+os.environ['HF_TOKEN'] = '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'
 
 def download_models(
     repo_id="black-forest-labs/FLUX.1-dev",
